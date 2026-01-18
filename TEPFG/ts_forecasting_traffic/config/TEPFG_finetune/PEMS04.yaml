@@ -1,0 +1,75 @@
+scenario: ts_forecasting_traffic.general_scenario.TSForecasting
+protocol: ts_forecasting_traffic.protocol_ts_forecasting_finetune.TSForecastingTVT
+algorithm: ts_forecasting_traffic.model.TEPFG_finetune.exp_TEPFG.Exp_TEPFG_finetune
+metrics: ['ts_forecasting_traffic.metrics.MAE', 'ts_forecasting_traffic.metrics.RMSE','ts_forecasting_traffic.metrics.MAE_N','ts_forecasting_traffic.metrics.MAE_E','ts_forecasting_traffic.metrics.RMSE_N','ts_forecasting_traffic.metrics.RMSE_E']
+data_path: ts_forecasting_traffic/data/PEMS04/PEMS04.npz
+over_write: True
+algorithm_parameters:
+  resume_state: False
+  device: 'cuda'
+  cuda: True
+  # data
+  in_steps: 12
+  out_steps: 12
+  his: 12
+  pred: 12
+  train_ratio: 0.6
+  val_ratio: 0.2
+  test_ratio: 0.2
+  time_of_day: True
+  day_of_week: True
+  real_value: False
+
+  # model
+  num_nodes: 307
+  steps_per_day: 288
+  input_dim: 3
+  output_dim: 1
+  input_embedding_dim: 24
+  tod_embedding_dim: 24
+  dow_embedding_dim: 24
+  spatial_embedding_dim: 0
+  adaptive_embedding_dim: 80
+  feed_forward_dim: 256
+  num_heads: 4
+  num_layers: 3
+  dropout: 0.1
+
+  # train
+  lr: 0.001
+  weight_decay: 0.0005
+  milestones: [15, 30, 50]
+  lr_decay_rate: 0.1
+  batch_size: 8
+  epochs: 100
+  use_cl: False
+  cl_step_size: 2500
+  use_mixed_proj: True
+
+  # other
+  pattern: 'train_whole'
+  extreme_max: 1.6
+  extreme_min: 1.6
+  dataset_use : ['PEMS04']
+
+  extreme_labeling : True
+  extreme_sample_num : 368
+  finetune_batch_size : 16
+  finetune_epochs : 2
+  extreme_ratio : 0.5
+  finetune_sample_num: 250
+  detect_sample_num : 250
+  loss_type_extreme : 'extreme'
+  dataset: 'PEMS04'
+  root_path: './ts_forecasting_traffic/data'
+  checkpoint_path_pntrain_model : 'ts_forecasting_traffic/checkpoints/TEPFG/PEMS04/checkpoint'
+  checkpoint_path_standard_model : 'ts_forecasting_traffic/checkpoints/TEPFG/PEMS04_standard/checkpoint_0_100_1.6'
+  checkpoint_path_standard_extreme_model : 'ts_forecasting_traffic/checkpoints/TEPFG/PEMS04_standard/checkpoint_0_100_1.6'
+  finetune_path : 'ts_forecasting_traffic/checkpoints/TEPFG/PEMS04/finetune_type/checkpoint.pth'
+  merge: True
+  label: True
+  use_GMM: False
+  normal_weight: 0.3
+  extreme_weight: 1
+  use_possibility: False
+  label_path: "result/PEMS04/label/predictions00.npy"
